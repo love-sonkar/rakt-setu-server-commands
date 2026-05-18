@@ -1,0 +1,29 @@
+// install postgres
+
+docker pull postgres
+
+// run
+docker run --name rakt_setu_db -e POSTGRES_PASSWORD=admin -p 5433:5432 -d postgres
+
+// setup user
+
+docker exec -it learn_postgres bash
+su - postgres
+psql
+
+// create user set hard password
+
+CREATE ROLE admin with login SUPERUSER PASSWORD ‘admin’;
+
+ALTER USER admin WITH CREATEDB CREATEROLE;
+
+// final run command after user setup without volume
+
+docker run --name rakt_setu_db -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=admin -p 5433:5432 -d postgres
+
+// setup volume to store persisted data
+
+docker volume create postgres-volume
+
+docker run --name rakt_setu_db -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=admin -p 5433:5432 -v pgdata:/var/lib/postgresql/data -d postgres
+
