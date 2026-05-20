@@ -1,3 +1,7 @@
+// create folder for postgres
+
+mkdir -p ~/postgres-data
+
 // install postgres
 
 docker pull postgres
@@ -7,7 +11,7 @@ docker run --name rakt_setu_db -e POSTGRES_PASSWORD=admin -p 5433:5432 -d postgr
 
 // setup user
 
-docker exec -it learn_postgres bash
+docker exec -it rakt_setu_db bash
 su - postgres
 psql
 
@@ -25,5 +29,24 @@ docker run --name rakt_setu_db -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=admin
 
 docker volume create postgres-volume
 
-docker run --name rakt_setu_db -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=admin -p 5433:5432 -v pgdata:/var/lib/postgresql/data -d postgres
+docker run --name rakt_setu_db -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=admin -p 5433:5432 -v ~/postgres-data:/var/lib/postgresql -d postgres
+
+// if timeZone error comes fix with this, "-U admin" is username and "-D admin" is db name
+
+docker exec -it <container_name> psql -U admin -d admin
+
+SHOW timezone;
+ALTER DATABASE rakt SET timezone TO 'Asia/Kolkata';
+
+// and in intellij run config add vm option
+-Duser.timezone=Asia/Kolkata
+
+docker restart <container_name>
+
+// volume in docker
+
+docker volume create postgres-volume
+
+docker run --name rakt_setu_db -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=admin -p 5433:5432 -v ~/postgres-data:/var/lib/postgresql -d postgres
+
 
